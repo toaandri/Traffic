@@ -1,0 +1,13 @@
+{
+	"fps_cap": 60,
+	"frames": 601,
+	"maximum_pedestrians": 40,
+	"maximum_vehicles": 110,
+	"mean_fps": 60.0024180674967,
+	"renderer": "NVIDIA GeForce RTX 2060",
+	"seconds": 10.016263,
+	"window": [
+		1440,
+		900
+	]
+}

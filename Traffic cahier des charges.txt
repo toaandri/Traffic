@@ -1,0 +1,502 @@
+TRAFFIC
+
+Cahier des charges fonctionnel et technique — Version 1.0
+
+Date : 08 octobre 2026 Statut : document de cadrage initial, à valider
+avant développement Contexte : projet de Licence 3 informatique
+
+------------------------------------------------------------------------
+
+1. Présentation générale
+
+1.1 Nom et nature
+
+Traffic est une plateforme de simulation interactive de
+mobilité urbaine, exécutée localement sur ordinateur. Elle permet de
+créer ou générer des réseaux routiers, de simuler des véhicules et des
+piétons, de contrôler les feux de circulation par plusieurs algorithmes
+et d’observer et comparer les résultats en 3D et au moyen d’indicateurs
+quantitatifs.
+
+1.2 Vision
+
+Construire un véritable laboratoire de simulation, et non une simple
+application de gestion ou une maquette graphique. L’utilisateur doit
+pouvoir créer une ville, configurer les flux, déclencher des événements,
+choisir un contrôleur, exécuter des scénarios reproductibles, observer
+les décisions et évaluer la robustesse des algorithmes.
+
+1.3 Problématique
+
+Dans quelle mesure des algorithmes de contrôle dynamique des
+intersections peuvent-ils réduire la congestion et les temps d’attente
+des véhicules et des piétons, sans compromettre les règles de sécurité,
+dans des réseaux routiers variés ?
+
+1.4 Objectifs
+
+-   Construire un éditeur de réseau routier utilisable.
+-   Générer automatiquement des villes synthétiques paramétrables.
+-   Simuler des déplacements de véhicules et de piétons cohérents.
+-   Afficher la simulation en 3D stylisée, en temps réel ou en accéléré.
+-   Développer au moins deux stratégies de gestion des feux : fixe et
+    adaptative.
+-   Permettre l’ajout de nouveaux algorithmes via une interface stable.
+-   Comparer les performances à scénarios équivalents.
+-   Tester les limites des algorithmes dans des situations dégradées.
+-   Produire des résultats exploitables pour un mémoire de L3.
+
+1.5 Principes retenus
+
+-   Priorité à la simulation et à la clarté, pas au photoréalisme.
+-   Voitures simplifiées (boîtes ou modèles low-poly), piétons sous
+    forme de capsules/silhouettes, bâtiments cubiques.
+-   Ville en 3D avec caméra libre, isométrique et vue du dessus.
+-   Séparation entre modèle de simulation, logique des algorithmes et
+    rendu graphique.
+-   Fonctionnement local et hors Internet pour les fonctions centrales.
+-   Simulations reproductibles grâce aux graines aléatoires et aux
+    configurations sauvegardées.
+-   Périmètre progressif : noyau de L3 puis extensions.
+
+2. Utilisateurs et cas d’utilisation
+
+2.1 Utilisateur principal
+
+Étudiant, enseignant ou expérimentateur souhaitant créer des réseaux,
+tester des algorithmes et mesurer leurs performances.
+
+2.2 Cas d’utilisation principaux
+
+CU-01 Créer un nouveau projet de simulation. CU-02 Dessiner manuellement
+un réseau routier. CU-03 Générer un réseau routier aléatoire avec
+paramètres. CU-04 Modifier les routes, intersections, trottoirs et
+passages piétons. CU-05 Configurer véhicules, piétons et
+origines/destinations. CU-06 Choisir un algorithme de contrôle du
+trafic. CU-07 Valider le réseau avant simulation. CU-08 Démarrer, mettre
+en pause, reprendre et réinitialiser. CU-09 Observer en 3D le trafic et
+les décisions des feux. CU-10 Déclencher un accident ou une fermeture de
+route. CU-11 Afficher et exporter les indicateurs. CU-12 Comparer deux
+algorithmes sur le même scénario. CU-13 Lancer des séries de tests
+automatisés. CU-14 Enregistrer et recharger un projet.
+
+3. Exigences fonctionnelles détaillées
+
+3.1 Gestion des projets et des scénarios
+
+F-001 Créer un projet avec nom, description et paramètres initiaux.
+[MVP] F-002 Sauvegarder et rouvrir un projet localement. [MVP] F-003
+Dupliquer un scénario pour comparaison. [MVP] F-004 Enregistrer la
+graine aléatoire, la version de l’algorithme et la configuration. [MVP]
+F-005 Importer/exporter les données du scénario en JSON documenté. [MVP]
+F-006 Historiser les exécutions et leurs résultats. [Avancé] F-007
+Fournir des exemples de villes préconfigurées. [MVP]
+
+3.2 Éditeur manuel de réseau routier
+
+F-010 Créer et supprimer des segments de route. [MVP] F-011 Connecter
+des segments et créer des intersections. [MVP] F-012 Déplacer et
+modifier les éléments avec la souris. [MVP] F-013 Configurer le sens de
+circulation et le nombre de voies. [Avancé] F-014 Définir des vitesses
+maximales. [Avancé] F-015 Ajouter des feux de circulation et définir
+leurs phases. [MVP] F-016 Placer des trottoirs et passages piétons.
+[MVP] F-017 Ajouter des points d’entrée, de sortie et de destination.
+[MVP] F-018 Afficher les connexions et les voies autorisées. [MVP] F-019
+Annuler/rétablir les actions d’édition. [Avancé] F-020 Sélection
+multiple, duplication et alignement sur grille. [Avancé] F-021 Dessiner
+des routes courbes et carrefours irréguliers. [Avancé] F-022 Ajouter des
+bâtiments et décors simples, sans incidence obligatoire sur le trafic.
+[Avancé] F-023 Configurer des restrictions de virage et des priorités.
+[Avancé] F-024 Enregistrer un réseau réutilisable comme modèle. [Avancé]
+
+3.3 Validation des cartes
+
+F-030 Vérifier la connectivité des routes et intersections. [MVP] F-031
+Signaler les segments isolés et les itinéraires impossibles. [MVP] F-032
+Vérifier que les origines et destinations sont accessibles. [MVP] F-033
+Vérifier la cohérence des feux et des traversées piétonnes. [MVP] F-034
+Empêcher le lancement en cas d’erreur bloquante, avec explication. [MVP]
+F-035 Proposer une liste d’avertissements non bloquants. [Avancé] F-036
+Vérifier l’absence de mouvements incompatibles simultanément autorisés.
+[MVP]
+
+3.4 Génération procédurale
+
+F-040 Générer une ville synthétique en grille. [MVP] F-041 Régler les
+dimensions et la densité routière. [MVP] F-042 Régler le nombre et la
+répartition des intersections. [Avancé] F-043 Définir une graine pour
+reproduire exactement une carte. [MVP] F-044 Générer des réseaux
+irréguliers et routes courbes. [Avancé] F-045 Générer automatiquement
+passages piétons et feux compatibles. [Avancé] F-046 Garantir ou
+contrôler la connectivité du réseau généré. [MVP] F-047 Régénérer une
+carte ou modifier manuellement une carte générée. [MVP] F-048 Générer
+plusieurs réseaux pour campagnes de tests. [Avancé] F-049 Prévoir des
+profils : centre-ville, quartier résidentiel, grille dense, réseau
+déséquilibré. [Avancé]
+
+3.5 Simulation des véhicules
+
+F-050 Faire apparaître et disparaître des véhicules selon la demande.
+[MVP] F-051 Associer à chaque véhicule un itinéraire valide. [MVP] F-052
+Simuler position, vitesse, accélération et freinage. [MVP] F-053
+Respecter feux, priorités et distances de sécurité. [MVP] F-054 Simuler
+les files d’attente et congestions. [MVP] F-055 Configurer le nombre de
+véhicules et le débit d’injection. [MVP] F-056 Afficher des véhicules
+low-poly distincts par type ou couleur. [MVP] F-057 Simuler changements
+de voie et dépassements si le réseau le permet. [Avancé] F-058
+Recalculer certains itinéraires selon congestion ou fermeture. [Avancé]
+F-059 Ajouter bus, arrêts et embarquement/débarquement. [Extension]
+F-060 Ajouter véhicules d’urgence et priorité dédiée. [Extension] F-061
+Configurer des profils de conduite hétérogènes. [Avancé]
+
+3.6 Simulation des piétons
+
+F-070 Créer des piétons avec points de départ et d’arrivée. [MVP] F-071
+Les faire circuler sur les trottoirs et liaisons autorisées. [MVP] F-072
+Leur faire traverser aux passages piétons. [MVP] F-073 Respecter les
+phases piétonnes des feux. [MVP] F-074 Mesurer les temps d’attente et de
+trajet des piétons. [MVP] F-075 Configurer la densité et les flux de
+piétons. [MVP] F-076 Représenter les piétons par capsules ou silhouettes
+simples. [MVP] F-077 Simuler les demandes de traversée et leur prise en
+compte par les contrôleurs. [MVP] F-078 Simuler les groupes de piétons
+et variations d’affluence. [Avancé] F-079 Ajouter des profils de vitesse
+de marche. [Avancé] F-080 Gérer des interactions complexes
+véhicule-piéton hors feux. [Extension]
+
+3.7 Feux et contrôle des intersections
+
+F-090 Définir les phases des feux pour chaque intersection. [MVP] F-091
+Définir des temps minimaux, maximaux et transitions de sécurité. [MVP]
+F-092 Exécuter un contrôleur à durées fixes. [MVP] F-093 Exécuter un
+contrôleur adaptatif fondé sur les files d’attente. [MVP] F-094 Prendre
+en compte les demandes et attentes piétonnes. [MVP] F-095 Afficher en
+direct la phase courante et la décision du contrôleur. [MVP] F-096
+Exposer une interface permettant de remplacer le contrôleur. [MVP] F-097
+Implémenter un contrôleur Max-Pressure. [Avancé] F-098 Implémenter un
+agent d’apprentissage par renforcement (DQN/PPO). [Extension] F-099
+Contrôler plusieurs intersections de manière coordonnée. [Avancé] F-100
+Garantir qu’aucun contrôleur ne contourne les contraintes de sécurité.
+[MVP]
+
+3.8 Visualisation 3D et interface
+
+F-110 Afficher le réseau, les routes, intersections et bâtiments simples
+en 3D. [MVP] F-111 Afficher et animer voitures et piétons en fonction de
+l’état simulé. [MVP] F-112 Fournir caméra libre, zoom, rotation et vue
+du dessus. [MVP] F-113 Démarrer, pause, reprise, arrêt et remise à zéro.
+[MVP] F-114 Modifier la vitesse de simulation (par exemple 0,5x, 1x,
+2x). [MVP] F-115 Sélectionner un véhicule, un piéton ou une intersection
+pour inspecter son état. [Avancé] F-116 Afficher les phases des feux et
+les files d’attente. [MVP] F-117 Colorer les routes selon leur niveau de
+congestion. [Avancé] F-118 Afficher trajectoires, itinéraires et
+décisions algorithmiques. [Avancé] F-119 Superposer un panneau de
+statistiques en direct. [MVP] F-120 Proposer un mode édition et un mode
+simulation distincts. [MVP] F-121 Permettre une capture d’écran et un
+export d’images. [Avancé] F-122 Proposer des raccourcis clavier et une
+aide contextuelle. [Avancé]
+
+3.9 Événements et scénarios dynamiques
+
+F-130 Configurer des heures de pointe et une demande variable dans le
+temps. [MVP] F-131 Fermer une route pendant une simulation. [Avancé]
+F-132 Déclencher un accident simulé avec blocage de voie ou route.
+[Avancé] F-133 Augmenter brutalement le nombre de véhicules ou piétons.
+[MVP] F-134 Simuler une panne de feu ou un changement de plan. [Avancé]
+F-135 Prévoir une chronologie d’événements déclenchés à des instants
+précis. [Avancé] F-136 Visualiser l’impact des perturbations sur le
+réseau. [Avancé] F-137 Restaurer l’état initial du scénario. [MVP]
+
+3.10 Mesures, résultats et comparaisons
+
+F-140 Mesurer le temps d’attente moyen des véhicules. [MVP] F-141
+Mesurer le temps de trajet moyen des véhicules. [MVP] F-142 Mesurer le
+temps d’attente moyen des piétons. [MVP] F-143 Mesurer le temps de
+trajet moyen des piétons. [MVP] F-144 Mesurer longueur des files, nombre
+d’arrêts et débit des intersections. [MVP] F-145 Afficher des courbes
+temporelles et tableaux comparatifs. [MVP] F-146 Comparer plusieurs
+contrôleurs sur un même réseau et une même demande. [MVP] F-147 Exporter
+les résultats en CSV et JSON. [MVP] F-148 Calculer améliorations
+relatives en pourcentage. [MVP] F-149 Conserver les mêmes graines,
+conditions initiales et événements entre essais comparés. [MVP] F-150
+Mesurer FPS, mémoire et durée de calcul par pas de simulation. [Avancé]
+F-151 Exporter un rapport de campagne d’essais. [Avancé] F-152 Ajouter
+mesures de dispersion et intervalles de confiance sur essais répétés.
+[Avancé] F-153 Mesurer blocages, itinéraires impossibles et véhicules
+non arrivés. [MVP]
+
+3.11 Tests de résistance et automatisation
+
+F-160 Fournir un mode « stress test ». [Avancé] F-161 Générer
+automatiquement des scénarios de trafic intense. [Avancé] F-162 Varier
+simultanément flux véhicules, piétons et structure du réseau. [Avancé]
+F-163 Exécuter des tests sans rendu 3D pour gagner du temps. [Avancé]
+F-164 Lancer plusieurs graines et agréger les résultats. [Avancé] F-165
+Détecter automatiquement blocages, défaillances et dégradations
+majeures. [Avancé] F-166 Comparer les résultats de chaque contrôleur sur
+une batterie identique. [Avancé] F-167 Conserver les scénarios ayant
+causé les pires performances pour analyse. [Avancé] F-168 Afficher les
+limites empiriques du système sans promettre une robustesse universelle.
+[Avancé]
+
+4. Règles métier et de simulation
+
+R-001 Les routes et traversées doivent former des graphes exploitables
+par le simulateur. R-002 Aucun véhicule ne doit apparaître sur une
+liaison non autorisée. R-003 Un piéton doit utiliser une traversée
+autorisée dans le périmètre du MVP. R-004 Deux mouvements incompatibles
+ne doivent pas recevoir simultanément un feu permissif. R-005 Les temps
+de transition et de dégagement doivent être respectés. R-006 Les
+algorithmes ne peuvent modifier que les paramètres qui leur sont
+explicitement exposés. R-007 Les résultats comparatifs utilisent la même
+carte, la même demande, la même durée et des graines documentées. R-008
+Les événements sont journalisés avec leur horodatage de simulation.
+R-009 La vitesse de rendu ne doit pas modifier la logique des résultats
+simulés. R-010 Toute modification majeure du réseau en cours d’exécution
+doit être appliquée de manière contrôlée ou nécessiter une relance.
+R-011 Les mesures distinguent les véhicules arrivés, non arrivés et
+bloqués pour éviter les comparaisons trompeuses. R-012 La priorité à la
+sécurité des traversées prime sur l’optimisation du débit.
+
+5. Exigences non fonctionnelles
+
+NF-001 Utilisabilité : interface compréhensible, modes édition et
+simulation bien séparés. NF-002 Performance : objectif initial de
+fluidité visuelle d’environ 30 FPS sur la machine cible pour une petite
+carte ; à mesurer, non garanti. NF-003 Charge initiale : viser 4 à 9
+intersections et environ 100 véhicules, puis augmenter progressivement
+selon les benchmarks. NF-004 Reproductibilité : même carte, graine et
+paramètres doivent donner des essais comparables ; documenter toute
+source de non-déterminisme. NF-005 Robustesse : aucune fermeture brutale
+sur scénario invalide ; messages d’erreur exploitables. NF-006
+Modularité : découpler éditeur, génération, simulation, contrôleurs,
+métriques et rendu. NF-007 Maintenabilité : code organisé, tests
+unitaires et documentation des interfaces. NF-008 Portabilité : cible
+initiale Windows ; Linux si les dépendances et le calendrier le
+permettent. NF-009 Fonctionnement local : pas de compte cloud ni de
+connexion Internet obligatoire. NF-010 Intégrité : sauvegardes validées,
+versions de schéma et gestion des fichiers corrompus. NF-011 Traçabilité
+: journaliser paramètres, versions et événements des expériences. NF-012
+Accessibilité : informations essentielles lisibles sans dépendre
+uniquement des couleurs. NF-013 Évolutivité : possibilité d’ajouter
+types d’agents et algorithmes sans refondre le cœur. NF-014 Exactitude :
+distinguer comportements simulés et prédictions de trafic réel ; ne pas
+revendiquer de validation terrain sans données.
+
+6. Architecture technique proposée
+
+6.1 Modules
+
+M1 Application desktop et interface 3D : Unity + C# (ou Godot en
+alternative). M2 Éditeur de réseau et outils de dessin. M3 Générateur
+procédural de cartes et validation de graphe. M4 Convertisseur de réseau
+interne vers le format du simulateur. M5 Moteur de mobilité : SUMO pour
+véhicules et piétons. M6 Pont de synchronisation : Python/TraCI vers
+Unity, via TCP/WebSocket ou autre IPC local. M7 Contrôleurs de feux :
+Python, interface de plugin/stratégie. M8 Orchestrateur des scénarios et
+événements. M9 Collecteur de mesures et moteur de comparaison. M10
+Stockage local des projets, configurations et résultats. M11 Exécuteur
+de tests en série sans rendu.
+
+6.2 Flux principal
+
+Éditeur/générateur -> modèle de ville -> validation -> export SUMO ->
+simulation -> états agents/feux -> rendu 3D. En parallèle : états
+simulés -> contrôleur -> commandes autorisées -> SUMO. Et : états
+simulés -> métriques -> tableaux, graphiques et exports.
+
+6.3 Recommandations de conception
+
+-   SUMO est la source de vérité des positions et interactions simulées
+    ; le moteur 3D n’invente pas les déplacements.
+-   Utiliser un pas de simulation fixe, et interpoler les positions
+    entre deux états côté rendu.
+-   Distinguer temps simulé et temps réel d’affichage.
+-   Prévoir identifiants stables pour routes, carrefours, véhicules et
+    piétons.
+-   Définir un schéma de données versionné pour les projets.
+-   Encadrer le contrôleur par un validateur de phases sûres.
+-   Documenter la conversion entre coordonnées du réseau et coordonnées
+    3D.
+
+6.4 Technologies candidates
+
+-   Unity/C# : rendu 3D, interface et éditeur ; alternative Godot.
+-   Blender : modèles low-poly facultatifs.
+-   SUMO : moteur de simulation de trafic multimodal.
+-   Python et TraCI : orchestration, contrôle, collecte de données.
+-   JSON : scénarios et configurations ; CSV : mesures ; SQLite :
+    historique facultatif.
+-   Git : gestion du code source ; tests automatisés et scripts de
+    benchmarks.
+-   Apprentissage par renforcement : PyTorch ou Stable-Baselines3
+    seulement en extension.
+
+7. Données essentielles
+
+Entité Projet : id, nom, version, date, configuration. Entité Noeud :
+id, coordonnées, type, connexions. Entité Route : id, noeud origine,
+noeud destination, sens, voies, vitesse, longueur. Entité Intersection :
+id, mouvements, priorités, contrôleur. Entité Passage piéton : id,
+extrémités, intersection associée, phase. Entité Agent véhicule : id,
+type, origine, destination, itinéraire, état. Entité Agent piéton : id,
+origine, destination, itinéraire, état. Entité Scénario : carte, graine,
+demande, événements, durée, contrôleur. Entité Exécution : id, scénario,
+versions, temps, mesures, journal. Entité Événement : instant, type,
+cible, paramètres.
+
+8. Algorithmes à étudier et implémenter
+
+A-01 Génération de grille routière et validation de connectivité par
+BFS/DFS. A-02 Calcul de plus courts chemins (Dijkstra/A*) pour
+validation ou analyse. A-03 Contrôle à cycles fixes : référence
+expérimentale. A-04 Contrôle adaptatif : ajustement des phases selon les
+files et les demandes piétonnes. A-05 Max-Pressure : stratégie avancée
+pour prioriser les mouvements congestionnés. A-06 Routage dynamique :
+adaptation d’itinéraire en présence d’incidents, en phase avancée. A-07
+Génération de réseaux irréguliers sous contraintes de connectivité. A-08
+Optimisation multiobjectif : arbitrer attente des véhicules et des
+piétons. A-09 Reinforcement learning : option de recherche avancée, à
+évaluer contre les baselines. A-10 Recherche de cas limites : génération
+et sélection des scénarios difficiles.
+
+9. Critères d’acceptation et scénarios de recette
+
+T-01 Créer une carte de quatre intersections, la sauvegarder et la
+rouvrir sans perte. T-02 Détecter une route isolée et afficher une
+erreur compréhensible. T-03 Générer deux fois la même carte avec la même
+graine et les mêmes paramètres. T-04 Simuler des véhicules qui
+s’arrêtent aux feux et évitent les collisions selon les règles du
+moteur. T-05 Simuler des piétons traversant sur une phase autorisée.
+T-06 Démontrer qu’aucune phase incompatible n’est activée par le
+contrôleur. T-07 Mettre en pause puis reprendre sans désynchroniser les
+états 3D et simulation. T-08 Réinitialiser un scénario et retrouver ses
+conditions de départ. T-09 Comparer feux fixes et adaptatifs sur la même
+demande, avec export CSV. T-10 Faire varier la densité et observer une
+évolution des indicateurs. T-11 Déclencher une hausse de demande et
+mesurer la réponse du contrôleur. T-12 Exécuter au moins trois graines
+différentes et agréger les résultats. T-13 Vérifier qu’un scénario
+invalide ne provoque pas de plantage. T-14 Vérifier que le calcul d’un
+indicateur correspond aux journaux bruts. T-15 Mesurer la fluidité sur
+la machine cible et documenter les limites constatées. T-16 Vérifier
+qu’un stress test peut reproduire le cas de défaillance identifié.
+
+10. Plan de développement indicatif sur six mois
+
+Mois 1 : spécifications, architecture, apprentissage du moteur 3D,
+premier quartier low-poly, caméra et éditeur minimal. Mois 2 : modèle de
+graphe, validation, export vers SUMO, synchronisation positions
+voitures/piétons et feux. Mois 3 : feux fixes, contrôleur adaptatif,
+règles de sécurité, premières mesures. Mois 4 : éditeur utilisable,
+génération procédurale simple, configuration de la demande, interface de
+statistiques. Mois 5 : scénarios dynamiques, comparaison automatisée,
+optimisation de rendu et tests de robustesse ; Max-Pressure si le socle
+est stable. Mois 6 : campagnes d’essais, analyse scientifique,
+correction, documentation, démonstration et soutenance.
+
+11. Priorisation et livrables
+
+11.1 MVP indispensable à la soutenance
+
+-   Application locale en 3D low-poly.
+-   Carte éditable simple et génération en grille.
+-   Validation de la connectivité.
+-   Voitures et piétons simulés avec feux et passages piétons.
+-   Deux contrôleurs : fixe et adaptatif.
+-   Démarrage, pause, reprise, réinitialisation et vitesse de
+    simulation.
+-   Mesures véhicules et piétons, export et comparaison équitable.
+-   Sauvegarde des scénarios et reproductibilité.
+-   Démonstration d’au moins un scénario de congestion.
+
+11.2 Fonctionnalités avancées prioritaires
+
+-   Routes irrégulières, éditeur amélioré et gestion fine des voies.
+-   Max-Pressure et coordination des intersections.
+-   Accidents, fermetures de route et routage alternatif.
+-   Heatmap de congestion, inspection d’agents et courbes enrichies.
+-   Stress tests automatisés et résultats agrégés.
+
+11.3 Extensions futures
+
+-   Reinforcement learning DQN/PPO.
+-   Bus et transports publics, véhicules d’urgence.
+-   Génération procédurale complexe de grandes villes.
+-   Import de données géographiques réelles, sous réserve de licence et
+    de conversion.
+-   Validation avec données réelles et scénarios à l’échelle d’une
+    ville.
+
+11.4 Livrables attendus
+
+L-01 Code source organisé et versionné. L-02 Exécutable desktop ou
+procédure reproductible de lancement. L-03 Exemples de réseaux et
+scénarios. L-04 Documentation utilisateur de l’éditeur et du simulateur.
+L-05 Documentation technique : architecture, schémas et interfaces. L-06
+Implémentation documentée des algorithmes. L-07 Jeux de tests et
+résultats comparatifs exportés. L-08 Mémoire de L3 : problématique,
+méthode, expérimentations, résultats, limites. L-09 Présentation et
+démonstration de soutenance.
+
+12. Risques et mesures d’atténuation
+
+RIS-01 Périmètre trop large : verrouiller le MVP avant d’implémenter les
+extensions. RIS-02 Complexité de la conversion réseau -> SUMO :
+commencer avec routes orthogonales et carrefours simples. RIS-03
+Désynchronisation simulation/3D : pas fixe, interpolation et
+journalisation. RIS-04 Faible performance : modèles low-poly,
+instanciation, tests sans rendu. RIS-05 Problèmes piétons/feux : tester
+les phases incompatibles et les traversées dès le début. RIS-06
+Résultats trompeurs : mêmes conditions de comparaison, répétitions et
+métriques bien définies. RIS-07 IA trop coûteuse : garder fixe et
+adaptatif comme résultats principaux ; RL facultatif. RIS-08 Dépendances
+externes : documenter versions, installation et compatibilités. RIS-09
+Réseaux générés invalides : validation automatique et correction avant
+simulation.
+
+13. Démonstration finale proposée
+
+1.  Ouvrir le logiciel et créer une ville en grille.
+2.  Ajouter une intersection, un feu et un passage piéton dans
+    l’éditeur.
+3.  Générer une demande de véhicules et de piétons.
+4.  Lancer la simulation avec feux fixes et observer une congestion.
+5.  Réinitialiser exactement le même scénario.
+6.  Passer au contrôleur adaptatif et observer ses décisions.
+7.  Afficher les indicateurs comparatifs, y compris l’attente des
+    piétons.
+8.  Déclencher une heure de pointe ou une perturbation.
+9.  Exécuter un stress test et présenter un cas où l’algorithme réussit
+    ou échoue.
+10. Exporter les résultats et présenter les conclusions et limites.
+
+14. Questions ouvertes à trancher avant implémentation
+
+Q-01 Choix définitif du moteur 3D : Unity ou Godot ? Q-02 Système
+d’exploitation cible et RAM disponible ? Q-03 Projet individuel ou
+équipe ? Q-04 Durée et calendrier exacts du projet de L3 ? Q-05 Quel
+niveau de liberté de dessin des routes est requis pour le MVP ? Q-06
+Quelle métrique principale optimisera le contrôleur : attente globale,
+débit ou compromis pondéré véhicules/piétons ? Q-07 Les piétons
+seront-ils uniquement sur passages signalés au MVP ? (proposition : oui)
+Q-08 Quel niveau de réalisme comportemental sera évalué par le jury ?
+Q-09 Quelle charge cible sera retenue après benchmarks ? Q-10 Le mémoire
+exige-t-il une innovation algorithmique ou une comparaison expérimentale
+suffit-elle ?
+
+15. Définition de la réussite
+
+Le projet est considéré comme fonctionnel lorsque l’utilisateur peut
+construire ou générer un réseau, y faire circuler des véhicules et
+piétons dans une visualisation 3D, sélectionner au moins deux stratégies
+de contrôle, exécuter des essais reproductibles, analyser les résultats
+et démontrer quantitativement les forces et limites des algorithmes.
+
+16. Proposition de titre académique
+
+« Conception et développement d’une plateforme interactive de simulation
+3D pour l’évaluation d’algorithmes d’optimisation du trafic urbain
+intégrant les flux véhiculaires et piétonniers ».
+
+------------------------------------------------------------------------
+
+FIN DU DOCUMENT

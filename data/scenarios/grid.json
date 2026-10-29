@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "name": "Grille de démonstration",
+  "seed": 42,
+  "duration": 120.0,
+  "step_length": 0.1,
+  "vehicles": 100,
+  "controller": "fixed",
+  "network": {
+    "nodes": [
+      {
+        "id": "n0_0",
+        "x": 0.0,
+        "y": 0.0
+      },
+      {
+        "id": "n1_0",
+        "x": 100.0,
+        "y": 0.0
+      },
+      {
+        "id": "n2_0",
+        "x": 200.0,
+        "y": 0.0
+      },
+      {
+        "id": "n0_1",
+        "x": 0.0,
+        "y": 100.0
+      },
+      {
+        "id": "n1_1",
+        "x": 100.0,
+        "y": 100.0
+      },
+      {
+        "id": "n2_1",
+        "x": 200.0,
+        "y": 100.0
+      },
+      {
+        "id": "n0_2",
+        "x": 0.0,
+        "y": 200.0
+      },
+      {
+        "id": "n1_2",
+        "x": 100.0,
+        "y": 200.0
+      },
+      {
+        "id": "n2_2",
+        "x": 200.0,
+        "y": 200.0
+      }
+    ],
+    "roads": [
+      {
+        "id": "n0_0__n1_0",
+        "source": "n0_0",
+        "target": "n1_0",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n1_0__n0_0",
+        "source": "n1_0",
+        "target": "n0_0",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n0_0__n0_1",
+        "source": "n0_0",
+        "target": "n0_1",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n0_1__n0_0",
+        "source": "n0_1",
+        "target": "n0_0",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n1_0__n2_0",
+        "source": "n1_0",
+        "target": "n2_0",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n2_0__n1_0",
+        "source": "n2_0",
+        "target": "n1_0",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n1_0__n1_1",
+        "source": "n1_0",
+        "target": "n1_1",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n1_1__n1_0",
+        "source": "n1_1",
+        "target": "n1_0",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n2_0__n2_1",
+        "source": "n2_0",
+        "target": "n2_1",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n2_1__n2_0",
+        "source": "n2_1",
+        "target": "n2_0",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n0_1__n1_1",
+        "source": "n0_1",
+        "target": "n1_1",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n1_1__n0_1",
+        "source": "n1_1",
+        "target": "n0_1",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n0_1__n0_2",
+        "source": "n0_1",
+        "target": "n0_2",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n0_2__n0_1",
+        "source": "n0_2",
+        "target": "n0_1",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n1_1__n2_1",
+        "source": "n1_1",
+        "target": "n2_1",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n2_1__n1_1",
+        "source": "n2_1",
+        "target": "n1_1",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n1_1__n1_2",
+        "source": "n1_1",
+        "target": "n1_2",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n1_2__n1_1",
+        "source": "n1_2",
+        "target": "n1_1",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n2_1__n2_2",
+        "source": "n2_1",
+        "target": "n2_2",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n2_2__n2_1",
+        "source": "n2_2",
+        "target": "n2_1",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n0_2__n1_2",
+        "source": "n0_2",
+        "target": "n1_2",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n1_2__n0_2",
+        "source": "n1_2",
+        "target": "n0_2",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n1_2__n2_2",
+        "source": "n1_2",
+        "target": "n2_2",
+        "lanes": 1,
+        "speed": 13.89
+      },
+      {
+        "id": "n2_2__n1_2",
+        "source": "n2_2",
+        "target": "n1_2",
+        "lanes": 1,
+        "speed": 13.89
+      }
+    ]
+  }
+}

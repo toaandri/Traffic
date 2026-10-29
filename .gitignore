@@ -1,0 +1,34 @@
+# Environnements et outils locaux
+.venv/
+.tools/
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+pytest-cache-files-*/
+.ruff_cache/
+
+# Builds et artefacts de distribution
+build/
+dist/
+*.spec
+
+# Données et résultats générés
+frontend/godot/.godot/
+data/projects/
+data/logs/
+data/profile/
+data/generated/
+data/results/
+
+# Systèmes et éditeurs
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
