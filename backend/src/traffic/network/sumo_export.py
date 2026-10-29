@@ -20,18 +20,17 @@ def export_scenario(scenario: Scenario, directory: Path) -> Path:
         ET.SubElement(nodes, "node", id=node.id, x=str(node.x), y=str(node.y), type="traffic_light")
     edges = ET.Element("edges")
     for road in scenario.network.roads:
-        ET.SubElement(
-            edges,
-            "edge",
-            {
-                "id": road.id,
-                "from": road.source,
-                "to": road.target,
-                "numLanes": str(road.lanes),
-                "speed": str(road.speed),
-                "sidewalkWidth": "2",
-            },
-        )
+        attributes = {
+            "id": road.id,
+            "from": road.source,
+            "to": road.target,
+            "numLanes": str(road.lanes),
+            "speed": str(road.speed),
+            "sidewalkWidth": "2",
+        }
+        if road.shape:
+            attributes["shape"] = " ".join(f"{x},{y}" for x, y in road.shape)
+        ET.SubElement(edges, "edge", attributes)
     ET.ElementTree(nodes).write(directory / "nodes.nod.xml", encoding="utf-8")
     ET.ElementTree(edges).write(directory / "edges.edg.xml", encoding="utf-8")
     connections = ET.Element("connections")
@@ -76,7 +75,17 @@ def export_scenario(scenario: Scenario, directory: Path) -> Path:
     net = sumolib.net.readNet(str(directory / "network.net.xml"))
     rng = random.Random(scenario.seed)
     routes = ET.Element("routes")
-    ET.SubElement(routes, "vType", id="car", accel="2.6", decel="4.5", sigma="0")
+    vehicle_profiles = {
+        "standard": {"accel": "2.6", "decel": "4.5", "sigma": "0.2"},
+        "cautious": {"accel": "1.8", "decel": "5.5", "sigma": "0.4"},
+        "aggressive": {"accel": "3.2", "decel": "4.0", "sigma": "0.1"},
+    }
+    ET.SubElement(
+        routes,
+        "vType",
+        id="car",
+        **vehicle_profiles[scenario.vehicle_profile],
+    )
     candidates = sorted(
         (edge for edge in net.getEdges() if edge.allows("passenger")), key=lambda edge: edge.getID()
     )
@@ -151,7 +160,7 @@ def export_scenario(scenario: Scenario, directory: Path) -> Path:
             {
                 "from": start.getID(),
                 "to": end.getID(),
-                "speed": "1.3",
+                "speed": str(scenario.pedestrian_speed),
                 "arrivalPos": str(min(20, end.getLength() * 0.8)),
             },
         )

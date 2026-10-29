@@ -13,6 +13,8 @@ from traffic.domain.models import Scenario
 from traffic.experiments.report import export_html
 from traffic.simulation.session import SimulationSession
 
+CONTROLLERS = ("fixed", "adaptive", "max_pressure")
+
 
 def run_comparison(scenario: Scenario, seeds: list[int], directory: Path) -> dict:
     if not seeds or len(set(seeds)) != len(seeds):
@@ -21,7 +23,7 @@ def run_comparison(scenario: Scenario, seeds: list[int], directory: Path) -> dic
     rows = []
     for seed in seeds:
         pair = []
-        for controller in ("fixed", "adaptive"):
+        for controller in CONTROLLERS:
             print(f"Essai graine {seed} / {controller}…", flush=True)
             trial = Scenario.model_validate(
                 {**scenario.model_dump(), "seed": seed, "controller": controller}
@@ -42,7 +44,7 @@ def run_comparison(scenario: Scenario, seeds: list[int], directory: Path) -> dic
         if pair[0] != pair[1]:
             raise RuntimeError("Comparaison refusée : les demandes ne sont pas identiques.")
     aggregates = {}
-    for controller in ("fixed", "adaptive"):
+    for controller in CONTROLLERS:
         selected = [row for row in rows if row["controller"] == controller]
         values = [
             row["vehicles"]["mean_waiting_time"]

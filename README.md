@@ -196,7 +196,10 @@ Les scénarios utilisent un schéma JSON versionné et validé par Pydantic. Les
 | `duration`, `step_length` | Durée et pas de simulation, en secondes. |
 | `vehicles`, `pedestrians` | Populations initiales à injecter ; les événements peuvent ajouter des agents. |
 | `vehicle_rate`, `pedestrian_rate` | Débits explicites en agents/heure ; `null` utilise la répartition automatique. Le zéro affiché dans l’IHM correspond à cette option automatique. |
-| `controller` | `fixed` ou `adaptive`. |
+| `controller` | `fixed`, `adaptive` ou `max_pressure`. |
+| `vehicle_profile` | `standard`, `cautious` ou `aggressive`. |
+| `pedestrian_speed` | Vitesse de marche en m/s, entre 0,5 et 3. |
+| `road.shape` | Points intermédiaires optionnels pour une route courbe ; le premier et le dernier point doivent correspondre aux nœuds. |
 | `demand_profile` | `steady` ou `peak`. |
 | `network` | Nœuds, routes orientées, passages piétons et génération automatique des traversées. |
 | `events` | Hausses de demande et incidents programmés. |

@@ -26,6 +26,8 @@ var lanes := SpinBox.new()
 var speed := SpinBox.new()
 var algorithm := OptionButton.new()
 var demand := OptionButton.new()
+var vehicle_profile := OptionButton.new()
+var pedestrian_speed := SpinBox.new()
 var time_label := Label.new()
 var status := Label.new()
 var message := Label.new()
@@ -301,7 +303,13 @@ func _ready() -> void:
 	_number(simulation, "Graine reproductible", seed, 0, 2147483645, 42)
 	algorithm.add_item("Feux fixes")
 	algorithm.add_item("Feux adaptatifs")
+	algorithm.add_item("Max-Pressure")
 	_field(simulation, "Contrôleur", algorithm)
+	vehicle_profile.add_item("Conduite standard")
+	vehicle_profile.add_item("Conduite prudente")
+	vehicle_profile.add_item("Conduite agressive")
+	_field(simulation, "Profil de conduite", vehicle_profile)
+	_number(simulation, "Vitesse de marche (m/s)", pedestrian_speed, 0.5, 3, 1.3, 0.1)
 	demand.add_item("Demande régulière")
 	demand.add_item("Heure de pointe")
 	_field(simulation, "Répartition des départs", demand)
@@ -448,7 +456,7 @@ func _ready() -> void:
 	analysis.add_child(chart)
 	results.name = "Comparaison"
 	results.bbcode_enabled = true
-	results.text = "Lancez une comparaison dans Expériences pour examiner les résultats des deux contrôleurs."
+	results.text = "Lancez une comparaison dans Expériences pour examiner les résultats des contrôleurs."
 	analysis.add_child(results)
 	var right_panel := PanelContainer.new()
 	right_panel.custom_minimum_size.x = 234
@@ -525,7 +533,8 @@ func toast(text: String, error: bool = false) -> void:
 
 func populate(scenario: Dictionary) -> void:
 	document_title.text = scenario.name
-	scenario_summary.text = "%d véhicules / %d piétons\nDurée : %.0f s\n%s" % [scenario.vehicles, scenario.pedestrians, scenario.duration, "Feux adaptatifs" if scenario.controller == "adaptive" else "Feux fixes"]
+	var controller_label: String = {"adaptive": "Feux adaptatifs", "max_pressure": "Max-Pressure"}.get(scenario.controller, "Feux fixes")
+	scenario_summary.text = "%d véhicules / %d piétons\nDurée : %.0f s\n%s" % [scenario.vehicles, scenario.pedestrians, scenario.duration, controller_label]
 	refresh_network(scenario.network)
 	project_name.text = scenario.name
 	description.text = scenario.get("description", "")
@@ -536,7 +545,9 @@ func populate(scenario: Dictionary) -> void:
 	seed.value = scenario.seed
 	duration.value = scenario.duration
 	step.value = scenario.step_length
-	algorithm.select(1 if scenario.controller == "adaptive" else 0)
+	algorithm.select({"adaptive": 1, "max_pressure": 2}.get(scenario.controller, 0))
+	vehicle_profile.select({"cautious": 1, "aggressive": 2}.get(scenario.get("vehicle_profile", "standard"), 0))
+	pedestrian_speed.value = scenario.get("pedestrian_speed", 1.3)
 	demand.select(1 if scenario.get("demand_profile") == "peak" else 0)
 	automatic_crossings.button_pressed = scenario.network.get("auto_crossings", true)
 	origin.clear()
@@ -588,4 +599,5 @@ func show_report(report: Dictionary) -> void:
 	analysis.current_tab = 1
 	var fixed: Dictionary = report.aggregates.fixed
 	var adaptive: Dictionary = report.aggregates.adaptive
-	results.text = "[b]Fixe / adaptatif[/b]\nArrivées véhicules\n%.1f / %.1f\n\nArrivées piétons\n%.1f / %.1f\n\nAttente véhicules arrivés\n%s / %s\n\nExaminer aussi les trajets inachevés.\nGraines : %s" % [fixed.mean_vehicle_arrivals, adaptive.mean_vehicle_arrivals, fixed.mean_pedestrian_arrivals, adaptive.mean_pedestrian_arrivals, _seconds(fixed.mean_vehicle_wait), _seconds(adaptive.mean_vehicle_wait), str(report.seeds)]
+	var max_pressure: Dictionary = report.aggregates.max_pressure
+	results.text = "[b]Fixe / adaptatif / Max-Pressure[/b]\nArrivées véhicules\n%.1f / %.1f / %.1f\n\nArrivées piétons\n%.1f / %.1f / %.1f\n\nAttente véhicules arrivés\n%s / %s / %s\n\nExaminer aussi les trajets inachevés.\nGraines : %s" % [fixed.mean_vehicle_arrivals, adaptive.mean_vehicle_arrivals, max_pressure.mean_vehicle_arrivals, fixed.mean_pedestrian_arrivals, adaptive.mean_pedestrian_arrivals, max_pressure.mean_pedestrian_arrivals, _seconds(fixed.mean_vehicle_wait), _seconds(adaptive.mean_vehicle_wait), _seconds(max_pressure.mean_vehicle_wait), str(report.seeds)]

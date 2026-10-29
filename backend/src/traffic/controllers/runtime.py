@@ -1,6 +1,7 @@
 from traffic.controllers.adaptive import AdaptiveController
 from traffic.controllers.base import Observation
 from traffic.controllers.fixed import FixedController
+from traffic.controllers.max_pressure import MaxPressureController
 from traffic.controllers.safety import safe_green_duration, validate_phase
 
 
@@ -15,7 +16,11 @@ class SignalRuntime:
     def __init__(self, connection, plans: dict, name: str):
         self.connection = connection
         self.plans = plans
-        self.controller = AdaptiveController() if name == "adaptive" else FixedController()
+        self.controller = {
+            "fixed": FixedController,
+            "adaptive": AdaptiveController,
+            "max_pressure": MaxPressureController,
+        }.get(name, FixedController)()
         self.previous = {}
         self.decisions = {}
         self.log = []
@@ -45,6 +50,17 @@ class SignalRuntime:
                         if phase["state"][int(index)] == "G" and not link["pedestrian"]
                     }
                     queue = sum(connection.lane.getLastStepHaltingNumber(lane) for lane in lanes)
+                    outgoing = {
+                        link["outgoing"]
+                        for index, link in plan["links"].items()
+                        if phase["state"][int(index)] == "G"
+                        and not link["pedestrian"]
+                        and link.get("outgoing")
+                    }
+                    downstream_queue = sum(
+                        connection.lane.getLastStepHaltingNumber(lane)
+                        for lane in outgoing
+                    )
                     crossings = {
                         link["via"].rsplit("_", 1)[0]
                         for link in plan["links"].values()
@@ -56,7 +72,11 @@ class SignalRuntime:
                         for person in connection.person.getIDList()
                     )
                     observation = Observation(
-                        phase_elapsed=0, vehicle_queue=queue, pedestrian_waiting=waiting
+                        phase_elapsed=0,
+                        vehicle_queue=queue,
+                        pedestrian_waiting=waiting,
+                        phase_pressure=queue - downstream_queue,
+                        pedestrian_pressure=waiting,
                     )
                     requested = self.controller.green_duration(observation)
                     if self.controller.name == "fixed":

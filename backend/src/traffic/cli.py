@@ -19,7 +19,7 @@ def main():
     parser.add_argument("--steps", type=int, default=100)
     parser.add_argument("--port", type=int, default=8765)
     parser.add_argument("--seeds", type=int, nargs="+", default=[42, 43, 44])
-    parser.add_argument("--controller", choices=["fixed", "adaptive"])
+    parser.add_argument("--controller", choices=["fixed", "adaptive", "max_pressure"])
     parser.add_argument("--rows", type=int, default=3)
     parser.add_argument("--columns", type=int, default=3)
     args = parser.parse_args()

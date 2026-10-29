@@ -32,7 +32,7 @@ def test_metrics_distinguish_finished_and_unfinished():
     assert values["unfinished_waiting_time"] == 1
 
 
-@pytest.mark.parametrize("controller", ["fixed", "adaptive"])
+@pytest.mark.parametrize("controller", ["fixed", "adaptive", "max_pressure"])
 def test_pedestrians_safe_phases_and_surge(controller):
     scenario = Scenario(
         network=generate_grid(2, 2),
@@ -91,12 +91,14 @@ def test_comparison_exports_equal_inputs_and_honest_empty_means():
     )
     destination = Path("data/results/test-comparison")
     report = run_comparison(scenario, [100, 101], destination)
-    assert len(report["runs"]) == 4
+    assert len(report["runs"]) == 6
     assert report["vehicle_wait_improvement_percent"] is None
     assert (destination / "comparison.csv").exists()
     for seed in report["seeds"]:
         fixed = destination / f"seed-{seed}" / "fixed" / "demand.rou.xml"
         adaptive = destination / f"seed-{seed}" / "adaptive" / "demand.rou.xml"
+        max_pressure = destination / f"seed-{seed}" / "max_pressure" / "demand.rou.xml"
         assert fixed.read_bytes() == adaptive.read_bytes()
+        assert fixed.read_bytes() == max_pressure.read_bytes()
     with pytest.raises(ValueError):
         run_comparison(scenario, [1, 1], destination)

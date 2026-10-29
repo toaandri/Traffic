@@ -162,8 +162,10 @@ func _candidate() -> Dictionary:
 	candidate.seed = int(ui.seed.value)
 	candidate.duration = ui.duration.value
 	candidate.step_length = ui.step.value
-	candidate.controller = "adaptive" if ui.algorithm.selected == 1 else "fixed"
+	candidate.controller = ["fixed", "adaptive", "max_pressure"][ui.algorithm.selected]
 	candidate.demand_profile = "peak" if ui.demand.selected == 1 else "steady"
+	candidate.vehicle_profile = ["standard", "cautious", "aggressive"][ui.vehicle_profile.selected]
+	candidate.pedestrian_speed = ui.pedestrian_speed.value
 	candidate.network = editor.network.duplicate(true)
 	candidate.network.auto_crossings = ui.automatic_crossings.button_pressed
 	candidate.vehicle_origins = [ui.route_names[ui.origin.selected - 1]] if ui.origin.selected > 0 else []

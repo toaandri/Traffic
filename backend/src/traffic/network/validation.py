@@ -37,6 +37,14 @@ def validate_network(network: Network) -> list[str]:
         elif road.source == road.target or positions[road.source] == positions[road.target]:
             errors.append(f"Route {road.id} : longueur nulle.")
         else:
+            if road.shape:
+                start, end = road.shape[0], road.shape[-1]
+                source, target = positions[road.source], positions[road.target]
+                if start != source or end != target:
+                    errors.append(
+                        f"Route {road.id} : la géométrie doit commencer à {road.source} "
+                        f"et finir à {road.target}."
+                    )
             graph.add_edge(road.source, road.target)
     if not nx.is_strongly_connected(graph):
         errors.append("Le réseau contient des nœuds isolés ou des trajets inaccessibles.")

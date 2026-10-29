@@ -8,6 +8,9 @@ forte et croisements de segments sans nœud commun. Les chemins véhicules suive
 les connexions effectives exportées par SUMO, pour respecter les virages autorisés.
 Les piétons sont routés par SUMO sur les trottoirs et les traversées générées.
 La demande est déterministe et indépendante du contrôleur.
+Une route peut aussi fournir une polyligne `shape` avec des points intermédiaires ;
+SUMO conserve cette géométrie à l'export, tandis que la validation vérifie que ses
+extrémités correspondent aux nœuds déclarés.
 
 ## Plans de feux protégés
 
@@ -46,12 +49,33 @@ Ce contrôleur simple est une baseline expérimentale à améliorer ; il ne gara
 pas un gain sur tous les scénarios. Sur le scénario de quatre carrefours vérifié,
 il augmente les arrivées piétonnes mais augmente l’attente moyenne des véhicules.
 
+**Max-Pressure** : estimer la pression d’une phase par la différence entre les
+files entrantes et les files sortantes, puis ajouter la demande piétonne. La
+durée recommandée reste bornée par le même garde de sécurité ; le contrôleur ne
+peut donc pas modifier les états, les conflits ou les transitions protégées.
+Les trois contrôleurs utilisent la même demande lors d’une comparaison.
+
+## Profils d'agents
+
+Les véhicules peuvent utiliser les profils `standard`, `cautious` ou `aggressive`.
+Ils modifient les paramètres SUMO d'acceleration, de freinage et de variabilite
+sans changer les itineraires ni les regles des feux. La vitesse de marche est
+configurable entre 0,5 et 3 m/s et est appliquee aux trajets pietons.
+
 ## Événements
 
 Une hausse de demande est programmée à un instant de simulation, appliquée au
 premier pas atteignant cet instant et journalisée avec les deux temps.
 Les véhicules supplémentaires utilisent une sélection déterministe des mêmes
 itinéraires de référence pour chaque contrôleur. Un reset rejoue le même scénario.
+
+Lors d'une fermeture ou d'un accident, le coût de l'arête est rendu prohibitif
+avant l'appel de reroutage SUMO. Le journal de l'événement distingue les véhicules
+dont l'itinéraire a réellement changé (`rerouted`) des erreurs de reroutage
+(`unroutable`). Les véhicules sans chemin alternatif restent comptabilisés et ne
+sont pas présentés comme une amélioration. Une fermeture doit être planifiée après
+le départ des véhicules concernés ; SUMO refuse sinon les véhicules futurs dont
+l'arête source devient interdite avant leur départ.
 
 ## Mesures
 
@@ -68,7 +92,7 @@ Le compteur de collisions cumule les véhicules impliqués signalés par SUMO au
 pas ; ce n’est pas un décompte d’accidents uniques. Les téléportations automatiques
 pour débloquer la congestion sont désactivées.
 
-La comparaison exécute fixe et adaptatif pour chaque graine, vérifie l’identité
+La comparaison exécute fixe, adaptatif et Max-Pressure pour chaque graine, vérifie l’identité
 du fichier de demande par SHA-256, exporte un tableau par type d’agent et calcule
 la moyenne entre essais ainsi que l’écart-type de l’échantillon. Le pourcentage
 d’amélioration est `(fixe - adaptatif) / fixe × 100`, uniquement si les deux

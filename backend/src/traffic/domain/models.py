@@ -28,6 +28,13 @@ class Road(Model):
     target: str
     lanes: int = Field(default=1, ge=1, le=4)
     speed: float = Field(default=13.89, gt=0)
+    shape: list[tuple[float, float]] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def valid_shape(self):
+        if self.shape and len(self.shape) < 2:
+            raise ValueError("La géométrie d'une route doit contenir au moins deux points.")
+        return self
 
 
 class Crossing(Model):
@@ -74,8 +81,10 @@ class Scenario(Model):
     vehicle_rate: float | None = Field(default=None, gt=0, le=50000)
     pedestrian_rate: float | None = Field(default=None, gt=0, le=50000)
     events: list[DemandSurge | RoadClosure] = Field(default_factory=list)
-    controller: Literal["fixed", "adaptive"] = "fixed"
+    controller: Literal["fixed", "adaptive", "max_pressure"] = "fixed"
     demand_profile: Literal["steady", "peak"] = "steady"
+    vehicle_profile: Literal["standard", "cautious", "aggressive"] = "standard"
+    pedestrian_speed: float = Field(default=1.3, gt=0.5, le=3)
     vehicle_origins: list[str] = Field(default_factory=list)
     vehicle_destinations: list[str] = Field(default_factory=list)
     pedestrian_origins: list[str] = Field(default_factory=list)

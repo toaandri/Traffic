@@ -42,6 +42,7 @@ def protect_signals(path: Path, durations: dict | None = None, bounds: dict | No
                 links[index] = {
                     "via": via,
                     "incoming": f"{connection.get('from')}_{connection.get('fromLane')}",
+                    "outgoing": f"{connection.get('to')}_{connection.get('toLane')}",
                     "pedestrian": via in crossing_lanes,
                 }
         size = len(logic.find("phase").get("state"))

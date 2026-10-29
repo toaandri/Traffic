@@ -211,6 +211,7 @@ class SimulationSession:
                         self.connection.lane.setDisallowed(lane, ["passenger"])
                 self.connection.edge.adaptTraveltime(event.road, 1000000)
                 failed = 0
+                rerouted = 0
                 for vehicle in self.connection.vehicle.getIDList():
                     if (
                         event.type == "accident"
@@ -220,7 +221,11 @@ class SimulationSession:
                         current["stopped"].append(vehicle)
                     if event.road in self.connection.vehicle.getRoute(vehicle):
                         try:
+                            previous_route = self.connection.vehicle.getRoute(vehicle)
                             self.connection.vehicle.rerouteTraveltime(vehicle)
+                            rerouted += (
+                                self.connection.vehicle.getRoute(vehicle) != previous_route
+                            )
                         except traci.TraCIException:
                             failed += 1
                 self.event_log.append(
@@ -230,6 +235,7 @@ class SimulationSession:
                         "type": event.type,
                         "road": event.road,
                         "duration": event.duration,
+                        "rerouted": rerouted,
                         "unroutable": failed,
                     }
                 )

@@ -25,6 +25,7 @@ data/logs/
 data/profile/
 data/generated/
 data/results/
+data/LocalLow/
 
 # Systèmes et éditeurs
 .DS_Store

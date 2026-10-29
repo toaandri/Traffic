@@ -16,6 +16,16 @@ def test_density_is_connected_seeded_and_reduced():
     assert not validate_network(first)
 
 
+def test_agent_profiles_are_preserved_in_scenarios():
+    scenario = Scenario(
+        network=generate_grid(2, 2),
+        vehicle_profile="cautious",
+        pedestrian_speed=1.8,
+    )
+    assert scenario.vehicle_profile == "cautious"
+    assert scenario.pedestrian_speed == 1.8
+
+
 def test_catalog_roundtrip_and_path_rejection():
     catalog = ProjectCatalog(Path("data/generated/test-catalog"))
     scenario = Scenario(
@@ -115,3 +125,24 @@ def test_closure_reopens_and_raw_log_matches_arrival_metrics():
     assert result["vehicles"]["mean_travel_time"] == pytest.approx(
         sum(v["end"] - v["start"] for v in finished) / len(finished)
     )
+
+
+def test_closure_records_dynamic_rerouting_outcome():
+    scenario = Scenario(
+        network=generate_grid(2, 2),
+        vehicles=8,
+        duration=150,
+        step_length=0.5,
+        events=[RoadClosure(time=2, road="n0_0__n1_0", duration=3)],
+    )
+    session = SimulationSession(scenario, Path("data/generated/test-rerouting"))
+    try:
+        while session.connection.simulation.getTime() < scenario.duration:
+            session.step()
+        closure = next(event for event in session.event_log if event["type"] == "closure")
+        assert isinstance(closure["rerouted"], int)
+        assert isinstance(closure["unroutable"], int)
+        assert closure["rerouted"] >= 0
+        assert closure["unroutable"] >= 0
+    finally:
+        session.close()
